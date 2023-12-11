@@ -153,7 +153,7 @@ func (kv *ShardKV) applyMsgHandlerLoop() {
 
 		case msg := <-kv.applyCh:
 
-			if msg.CommandValid == true {
+			if msg.CommandValid {
 				kv.mu.Lock()
 				op := msg.Command.(Op)
 				reply := OpReply{
@@ -223,7 +223,7 @@ func (kv *ShardKV) applyMsgHandlerLoop() {
 
 			}
 
-			if msg.SnapshotValid == true {
+			if msg.SnapshotValid {
 				if kv.rf.CondInstallSnapshot(msg.SnapshotTerm, msg.SnapshotIndex, msg.Snapshot) {
 					// 读取快照的数据
 					kv.mu.Lock()
@@ -235,8 +235,8 @@ func (kv *ShardKV) applyMsgHandlerLoop() {
 
 		}
 	}
-
 }
+
 func (kv *ShardKV) sayBasicInfo() string {
 	return fmt.Sprintf("[gid:%d, kv.me:%d, kv.latestConfig：%v，\n kv.curConfig:%v, kv.maxraftstate:%d, "+
 		"] \n， [kv.shardPersist:%v]", kv.gid, kv.me, kv.LastConfig, kv.Config, kv.maxRaftState, kv.shardsPersist)
